@@ -1,0 +1,87 @@
+/* #==========# BASE Y COLORES #==========# */
+:root {
+  /* Paleta arena y ámbar: superficies suaves y texto oscuro. */
+  --background: #F7F5F0;
+  --surface: #FFFCF7;
+  --text: #292723;
+  --muted: #696257;
+  --border: #DED8CD;
+  --accent: #F2B544;
+  --accent-hover: #E8A62C;
+  --hover: #F3EDE2;
+  --focus: #946018;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: var(--text);
+  background: var(--background);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 320px; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button { font: inherit; }
+button:focus-visible, a:focus-visible { outline: 3px solid var(--focus); outline-offset: 5px; }
+
+/* #==========# CABECERA #==========# */
+.app-header {
+  min-height: 94px;
+  padding: 20px max(24px, calc((100% - 1180px) / 2));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; }
+.brand-logo { display: block; width: 88px; height: 88px; object-fit: contain; background: #000; border-radius: 12px; flex-shrink: 0; }
+.brand strong { font-size: 24px; letter-spacing: -1px; }
+.brand-caption { display: block; font-size: 12px; color: var(--muted); }
+.preview-label { font-size: 13px; color: var(--muted); }
+
+/* #==========# MENÚ DE OPCIONES #==========# */
+.home-content { max-width: 1228px; margin: 0 auto; padding: 48px 24px 32px; }
+.home-heading { margin-bottom: 36px; }
+.eyebrow { font-size: 11px; font-weight: 700; letter-spacing: 2px; color: var(--muted); margin: 0 0 12px; }
+h1 { margin: 0; font-size: clamp(28px, 4vw, 40px); letter-spacing: -1.5px; line-height: 1.15; }
+.intro { margin: 12px 0 0; color: var(--muted); font-size: 17px; }
+.option-section { margin-bottom: 28px; }
+.option-section h2 { font-size: 15px; font-weight: 600; margin: 0 0 14px; }
+.option-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.option-button {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  min-height: 174px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+  transition: border-color 150ms, background 150ms;
+}
+.option-button:hover { background: var(--hover); border-color: var(--focus); }
+.option-title { font-size: 21px; font-weight: 650; letter-spacing: -.5px; }
+.option-description { font-size: 14px; line-height: 1.5; margin: 8px 0 20px; color: var(--muted); }
+.option-action { font-size: 13px; font-weight: 600; margin-top: auto; width: 100%; display: flex; justify-content: space-between; }
+.option-action span { font-size: 19px; line-height: 1; }
+.option-primary { background: var(--accent); color: var(--text); border-color: var(--accent); }
+.option-primary .option-description { color: var(--text); }
+.option-primary:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+.home-note { font-size: 13px; line-height: 1.6; color: var(--muted); margin: 32px 0 0; }
+
+/* #==========# DIÁLOGO Y NAVEGACIÓN POR TECLADO #==========# */
+.module-dialog { width: min(460px, calc(100% - 32px)); border: 1px solid var(--border); border-radius: 18px; padding: 32px; color: var(--text); }
+.module-dialog::backdrop { background: rgb(41 39 35 / 45%); }
+.module-dialog h2 { margin: 0 0 12px; font-size: 26px; }
+.module-dialog > p:not(.eyebrow) { color: var(--muted); line-height: 1.6; }
+.return-button { border: 0; border-radius: 8px; background: var(--accent); color: var(--text); padding: 14px 20px; cursor: pointer; margin-top: 12px; }
+
+/* #==========# PANTALLAS PEQUEÑAS #==========# */
+@media (max-width: 1000px) { .option-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { .option-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .app-header { align-items: flex-start; } .preview-label { max-width: 135px; text-align: right; line-height: 1.5; } }
+@media (max-width: 460px) { .home-content { padding-top: 32px; } .option-grid { grid-template-columns: 1fr; } .option-button { min-height: 150px; } }
+@media (prefers-reduced-motion: reduce) { .option-button { transition: none; } }

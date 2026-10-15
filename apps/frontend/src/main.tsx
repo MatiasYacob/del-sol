@@ -1,15 +1,11 @@
 // #==========# IMPORTACIONES #==========#
 import { createRoot } from 'react-dom/client';
+import { HomePage } from './pages/HomePage';
+import './styles.css';
 
 // #==========# PANTALLA INICIAL #==========#
-// Vista provisional hasta implementar las pantallas del negocio.
 function App() {
-  return (
-    <main>
-      <h1>Distribuidora Del Sol</h1>
-      <p>Entorno de desarrollo preparado.</p>
-    </main>
-  );
+  return <HomePage />;
 }
 
 // #==========# MONTAJE DE REACT #==========#

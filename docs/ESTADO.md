@@ -31,3 +31,5 @@ Conectividad y operación durante cortes; reglas de stock, caja y cuentas; compa
 - Prueba de arranque temporal: API de salud, Swagger y frontend respondieron HTTP 200.
 - Se comentó y formateó el código inicial con separadores #==========#; revisión de tipos y compilación correctas.
 - Se extrajo Swagger a src/config/swagger.config.ts; main.ts lo activa mediante setupSwagger(app). Revisión de tipos y compilación del backend correctas.
+- Se creó una vista previa del inicio con botones grandes para los diez módulos, diseño adaptable y diálogo de estado. Sin login ni permisos implementados. Tipos y compilación del frontend correctos.
+- Se aplicó la paleta arena y ámbar elegida por el usuario y se incorporó el logo original en la cabecera.
