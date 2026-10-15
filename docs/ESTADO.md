@@ -7,7 +7,7 @@ Actualizado el 15 de octubre de 2026.
 - Se conversó una propuesta de NestJS y React con TypeScript; el ORM está pendiente.
 - Se acordó documentar dentro del repositorio y utilizar Git/GitHub.
 - Se creó `PREPARACION.md` con alcance, pendientes, herramientas y primera entrega propuesta.
-- No se creó repositorio Git/GitHub, no se instalaron dependencias y no se implementó código de aplicación.
+- Se creó el repositorio privado https://github.com/MatiasYacob/del-sol y se publicó la documentación inicial en main. No se instalaron dependencias ni se implementó código de aplicación.
 
 ## Riesgos y pendientes
 
@@ -16,5 +16,6 @@ Conectividad y operación durante cortes; reglas de stock, caja y cuentas; compa
 ## Próximos pasos
 
 1. Resolver conectividad y confirmar stack.
-2. Definir cuenta, nombre y visibilidad del repositorio.
+2. Definir colaboradores y reglas de revisión del repositorio.
 3. Validar alcance inicial y modelo de datos antes de instalar y programar.
+
