@@ -12,8 +12,8 @@ Desarrollar el sistema de gestión de Distribuidora Del Sol para sus tres locale
 |---|---|
 | Base de datos MySQL | Obligatoria, confirmado por el usuario |
 | Lenguajes conocidos | Java, JavaScript, Python y TypeScript |
-| Backend NestJS y frontend React con TypeScript | Propuesta conversada; confirmar antes de instalar |
-| Vite y Tailwind CSS | Propuestos para el frontend |
+| Backend NestJS y frontend React con TypeScript | Entorno instalado por autorización del usuario |
+| Vite y Tailwind CSS | Vite instalado; Tailwind pendiente |
 | Arquitectura | Propuesta: un backend modular y un frontend, en un repositorio |
 | Acceso a datos | Pendiente: comprobar soporte vigente de MySQL y elegir ORM y versión |
 | Git y GitHub | Repositorio privado creado: MatiasYacob/del-sol |
@@ -75,4 +75,3 @@ El desarrollo local y reversible se realiza dentro del alcance autorizado. Publi
 `apps/backend`, `apps/frontend`, `docs` y, solo si hace falta, `packages` para código compartido. Mantener los originales académicos en su ubicación actual.
 
 Cada funcionalidad debe incluir su documentación, migraciones cuando correspondan y verificación proporcional al riesgo. Registrar las decisiones de arquitectura y mantener un archivo de estado breve.
-

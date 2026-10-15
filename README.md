@@ -4,9 +4,42 @@ Sistema de gestión para los tres locales de Distribuidora Del Sol, basado en el
 
 ## Estado
 
-Preparación y definición de requisitos. Todavía no hay una aplicación ejecutable.
+Entorno inicial ejecutable con frontend React y API NestJS. Las funcionalidades del negocio todavía no están implementadas.
 
-MySQL es obligatorio. La propuesta de implementación es NestJS y React con TypeScript; el ORM y las versiones están pendientes de selección.
+MySQL es obligatorio. NestJS y React con TypeScript están instalados; el ORM está pendiente de selección. Las versiones exactas están fijadas en los package.json y package-lock.json.
+
+## Desarrollo local
+
+Requiere Node.js 24.13.1 o superior dentro de la rama 24 y npm. Desde la raíz del repositorio:
+
+```sh
+npm ci
+npm run dev
+```
+
+- Frontend: http://127.0.0.1:5173
+- Salud de la API: http://127.0.0.1:3000/api/health
+- Documentación Swagger: http://127.0.0.1:3000/api/docs
+
+La configuración de Swagger está en `apps/backend/src/config/swagger.config.ts`.
+El archivo `main.ts` la activa mediante `setupSwagger(app)` después de definir el prefijo de la API.
+
+Detener con Ctrl+C. Para verificar tipos y compilar:
+
+```sh
+npm run typecheck
+npm run build
+```
+
+La ruta de salud solo comprueba que la API responde; no comprueba conexión con MySQL.
+
+## MySQL
+
+Se encontró MySQL Server 8.0.45 instalado localmente. Su servicio `MySQL80` está detenido y el inicio requiere privilegios de administrador. La instalación de XAMPP corresponde a MariaDB y no es la base elegida para este proyecto.
+
+Pendiente: iniciar MySQL80, crear una base y usuario exclusivos de desarrollo y elegir el ORM antes de implementar persistencia. El controlador mysql2 ya está instalado. No se han modificado bases existentes.
+
+Copiar `apps/backend/.env.example` a `apps/backend/.env` y completar la configuración local cuando se prepare la base. Nunca subir ese archivo ni contraseñas al repositorio. La API todavía no utiliza esas variables de base de datos.
 
 ## Documentación
 

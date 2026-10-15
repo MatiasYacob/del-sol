@@ -1,0 +1,19 @@
+{
+  "name": "del-sol",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=24.13.1 <25"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n backend,frontend \"npm run dev -w @del-sol/backend\" \"npm run dev -w @del-sol/frontend\"",
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces"
+  },
+  "devDependencies": {
+    "concurrently": "10.0.6"
+  }
+}
