@@ -1,0 +1,27 @@
+# Dependencias y resultados de compilación
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Configuración privada
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Datos y archivos generados
+backups/
+uploads/
+tmp/
+*.sql
+*.sql.gz
+*.log
+
+# Archivos locales
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
