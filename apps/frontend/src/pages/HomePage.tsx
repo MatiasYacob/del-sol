@@ -1,66 +1,81 @@
 // #==========# IMPORTACIONES #==========#
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { homeOptions, type HomeOption } from './home-options';
 
-// #==========# INICIO DEL SISTEMA #==========#
+// #==========# MENÚ LATERAL PLEGABLE #==========#
+// Una sola sección abierta a la vez. Los permisos se incorporarán con el login.
+function Sidebar({ selected, onSelect }: {
+  selected: HomeOption | null;
+  onSelect: (option: HomeOption | null) => void;
+}) {
+  const [openGroup, setOpenGroup] = useState<string | null>('Operaciones');
+
+  return (
+    <aside className="sidebar">
+      <a className="brand" href="/" aria-label="Distribuidora Del Sol, inicio">
+        <img className="brand-logo" src="/logo-del-sol.png" alt="" width="88" height="88" />
+        <span><strong>Del Sol</strong><span className="brand-caption">Distribuidora</span></span>
+      </a>
+
+      <nav className="sidebar-nav" aria-label="Opciones del sistema">
+        <button className={`sidebar-home${!selected ? ' is-active' : ''}`} onClick={() => onSelect(null)} aria-current={!selected ? 'page' : undefined}>
+          Inicio
+        </button>
+
+        {(['Operaciones', 'Administración'] as const).map((group, index) => {
+          const isOpen = openGroup === group;
+          const panelId = `sidebar-panel-${index}`;
+
+          return (
+            <section className="accordion-section" key={group}>
+              <h2>
+                <button className="accordion-trigger" id={`sidebar-heading-${index}`} aria-expanded={isOpen} aria-controls={panelId} onClick={() => setOpenGroup(isOpen ? null : group)}>
+                  {group}
+                  <span className="accordion-symbol" aria-hidden="true">{isOpen ? '−' : '+'}</span>
+                </button>
+              </h2>
+              <div className="accordion-panel" id={panelId} aria-labelledby={`sidebar-heading-${index}`} hidden={!isOpen}>
+                {homeOptions.filter((option) => option.group === group).map((option) => (
+                  <button className={`sidebar-option${selected?.id === option.id ? ' is-active' : ''}`} key={option.id} onClick={() => onSelect(option)} aria-current={selected?.id === option.id ? 'page' : undefined}>
+                    {option.name}
+                  </button>
+                ))}
+              </div>
+            </section>
+          );
+        })}
+      </nav>
+      <p className="sidebar-note">Sistema de gestión</p>
+    </aside>
+  );
+}
+
+// #==========# ÁREA DE TRABAJO #==========#
 export function HomePage() {
   const [selected, setSelected] = useState<HomeOption | null>(null);
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  // El diálogo informa el estado real de cada módulo hasta su implementación.
-  function openOption(option: HomeOption) {
-    setSelected(option);
-    dialogRef.current?.showModal();
-  }
 
   return (
     <div className="app-shell">
-      {/* #==========# IDENTIDAD DEL SISTEMA #==========# */}
-      <header className="app-header">
-        <a className="brand" href="/" aria-label="Distribuidora Del Sol, inicio">
-          <img className="brand-logo" src="/logo-del-sol.png" alt="" width="88" height="88" />
-          <span><strong>Del Sol</strong><span className="brand-caption">Distribuidora</span></span>
-        </a>
-        <span className="preview-label">Vista previa · Sin sesión iniciada</span>
-      </header>
-
-      <main className="home-content">
-        {/* #==========# OPCIONES PRINCIPALES #==========# */}
-        <div className="home-heading">
-          <p className="eyebrow">MENÚ PRINCIPAL</p>
-          <h1>¿Qué necesitás hacer?</h1>
-          <p className="intro">Elegí una opción para empezar.</p>
-        </div>
-
-        {(['Operaciones', 'Administración'] as const).map((group) => (
-          <section className="option-section" key={group} aria-labelledby={`group-${group}`}>
-            <h2 id={`group-${group}`}>{group}</h2>
-            <div className="option-grid">
-              {homeOptions.filter((option) => option.group === group).map((option) => (
-                <button
-                  className={`option-button${option.id === 'ventas' ? ' option-primary' : ''}`}
-                  key={option.id}
-                  onClick={() => openOption(option)}
-                  aria-haspopup="dialog"
-                >
-                  <span className="option-title">{option.name}</span>
-                  <span className="option-description">{option.description}</span>
-                  <span className="option-action">Abrir <span aria-hidden="true">↗</span></span>
-                </button>
-              ))}
-            </div>
+      <Sidebar selected={selected} onSelect={setSelected} />
+      <div className="workspace">
+        <header className="workspace-header">
+          <span>{selected?.group ?? 'Inicio'}</span>
+          <span className="preview-label">Distribuidora Del Sol</span>
+        </header>
+        <main className="home-content" id="main-content">
+          <div className="home-heading">
+            <p className="eyebrow">{selected ? 'MÓDULO DEL SISTEMA' : 'MENÚ PRINCIPAL'}</p>
+            <h1>{selected?.name ?? 'Bienvenido a Del Sol'}</h1>
+            <p className="intro">{selected?.description ?? 'Elegí una opción del menú de la izquierda para empezar.'}</p>
+          </div>
+          {/* #==========# ESTADO REAL DEL DESARROLLO #==========# */}
+          <section className="workspace-notice" aria-live="polite">
+            <h2>{selected ? 'Este módulo está en preparación' : 'Tu espacio de trabajo'}</h2>
+            <p>{selected ? 'La funcionalidad todavía no está disponible. Podés seleccionar otra opción del menú.' : 'Desde el menú podés acceder a ventas, productos, clientes y las demás opciones del sistema. Pulsá una sección para desplegar sus opciones.'}</p>
           </section>
-        ))}
-        <p className="home-note">Los módulos están en preparación. El acceso según tu rol se incorporará con el inicio de sesión.</p>
-      </main>
-
-      {/* #==========# ESTADO DEL MÓDULO SELECCIONADO #==========# */}
-      <dialog ref={dialogRef} className="module-dialog" aria-labelledby="module-title" aria-describedby="module-description">
-        <p className="eyebrow">EN PREPARACIÓN</p>
-        <h2 id="module-title">{selected?.name}</h2>
-        <p id="module-description">{selected?.description} Esta función todavía no está disponible.</p>
-        <form method="dialog"><button className="return-button">Volver al inicio</button></form>
-      </dialog>
+          <p className="home-note">Los módulos del negocio y sus permisos específicos están en preparación.</p>
+        </main>
+      </div>
     </div>
   );
 }

@@ -9,6 +9,7 @@ export function setupSwagger(app: INestApplication): void {
   const config = new DocumentBuilder()
     .setTitle('Del Sol API')
     .setVersion('0.1.0')
+    .addCookieAuth('del_sol_session')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

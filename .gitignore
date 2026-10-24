@@ -17,6 +17,7 @@ backups/
 uploads/
 tmp/
 *.sql
+!database/**/*.sql
 *.sql.gz
 *.log
 

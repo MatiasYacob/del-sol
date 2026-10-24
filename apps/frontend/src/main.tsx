@@ -1,11 +1,11 @@
 // #==========# IMPORTACIONES #==========#
 import { createRoot } from 'react-dom/client';
-import { HomePage } from './pages/HomePage';
+import { AuthApp } from './auth/AuthApp';
 import './styles.css';
 
 // #==========# PANTALLA INICIAL #==========#
 function App() {
-  return <HomePage />;
+  return <AuthApp />;
 }
 
 // #==========# MONTAJE DE REACT #==========#
