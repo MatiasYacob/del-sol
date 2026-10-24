@@ -2,12 +2,12 @@
 
 ## Preparación local
 
-1. Aplicar una sola vez `database/migrations/002_sessions.sql` en Workbench como administrador.
+1. Aplicar las migraciones 001, 002 y 003 en orden, una sola vez, en Workbench como administrador. Para una base existente seguir [MODELO-ORIGINAL.md](MODELO-ORIGINAL.md).
 2. Completar `apps/backend/.env` con el usuario de aplicación. Usar `FRONTEND_ORIGIN=http://127.0.0.1:5173`.
-3. Desde la raíz ejecutar `npm run create-admin -w @del-sol/backend`. El asistente pide nombre, usuario y contraseña dos veces sin mostrarla. Exige entre 12 y 256 caracteres y no modifica un usuario existente.
+3. Desde la raíz ejecutar `npm run create-admin -w @del-sol/backend`. El asistente pide nombre y apellido del empleado, usuario y contraseña dos veces sin mostrarla. Nombre, apellido y usuario admiten hasta 50 caracteres; la contraseña exige entre 12 y 256. No modifica un usuario existente.
 4. Ejecutar `npm run dev` y abrir `http://127.0.0.1:5173`. Reiniciar procesos que ya estuvieran ejecutándose para tomar las nuevas variables.
 
-El alta inicial usa una transacción y asigna administrador_sistema. No inventa locales. El usuario podrá iniciar sesión, pero los módulos comerciales y permisos detallados por local todavía no están implementados.
+El alta inicial usa una transacción para crear Empleado, Usuario y sus metadatos de seguridad. Asigna un único Id_Rol correspondiente a Administrador del sistema. No inventa locales. Los módulos comerciales y permisos detallados por local todavía no están implementados.
 
 ## Seguridad implementada
 
@@ -16,7 +16,7 @@ El alta inicial usa una transacción y asigna administrador_sistema. No inventa 
 - Cookie HttpOnly, SameSite=Strict, Path=/api y vida máxima de seis horas; Secure cuando NODE_ENV=production. Producción requiere HTTPS y frontend/API bajo el mismo sitio.
 - Expiración en el servidor tras cinco horas sin actividad o seis horas desde el login. La actividad nunca cambia la fecha inicial.
 - `/me` no renueva la actividad. El frontend registra interacción real por teclado, clic o desplazamiento, como máximo una vez por minuto. Una pestaña abandonada no emite actividad periódica.
-- El servidor comprueba que el usuario continúe activo y consulta sus roles y locales activos en cada solicitud autenticada.
+- El servidor comprueba que el usuario continúe activo y consulta su único rol en cada solicitud autenticada. La asignación a locales está pendiente de modelado.
 - Logout elimina la sesión en MySQL. Las sesiones vencidas se rechazan y se limpian al consultar o al iniciar sesión.
 - Origen exacto para login y origen más token CSRF para solicitudes autenticadas que modifican estado.
 - Cinco intentos por minuto e IP en login. El contador reside en memoria de cada proceso: un despliegue con varias instancias necesita un almacén compartido. Reiniciar el proceso reinicia el contador.

@@ -127,7 +127,7 @@ export function AuthApp() {
         <p className="intro">Ingresá con tu usuario para continuar.</p>
         <form onSubmit={login} className="login-form">
           <label htmlFor="username">Usuario</label>
-          <input id="username" name="username" autoComplete="username" maxLength={100} required disabled={busy} />
+          <input id="username" name="username" autoComplete="username" maxLength={50} required disabled={busy} />
           <label htmlFor="password">Contraseña</label>
           <input id="password" name="password" type="password" autoComplete="current-password" maxLength={256} required disabled={busy} />
           {error && <p className="login-error" role="alert">{error}</p>}

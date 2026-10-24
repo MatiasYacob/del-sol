@@ -27,14 +27,19 @@ test('login, cookie, CSRF, actividad, expiración, revocación y límite de inte
   const db = await mysql.createConnection({ host: process.env.DB_HOST, port: Number(process.env.DB_PORT || 3306), user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_NAME });
   let app;
   let userId;
+  let employeeId;
   const username = `test_${randomBytes(8).toString('hex')}`;
   const password = randomBytes(24).toString('hex');
   try {
     await db.query('SELECT token_hash FROM sesiones LIMIT 0');
     const hash = await argon2.hash(password, { type: argon2.argon2id });
-    const [result] = await db.execute('INSERT INTO usuarios (nombre, nombre_usuario, password_hash) VALUES (?, ?, ?)', ['Prueba temporal de login', username, hash]);
+    const [role] = await db.execute('SELECT Id FROM Rol WHERE `Descripción` = ?', ['Administrador del sistema']);
+    assert.equal(role.length, 1);
+    const [employee] = await db.execute('INSERT INTO Empleado (Nombre, Apellido) VALUES (?, ?)', ['Prueba temporal', 'Login']);
+    employeeId = employee.insertId;
+    const [result] = await db.execute('INSERT INTO Usuario (Nombre, `Contraseña`, Id_empleado, Id_Rol) VALUES (?, ?, ?, ?)', [username, hash, employeeId, role[0].Id]);
     userId = result.insertId;
-    await db.execute('INSERT INTO usuario_roles (usuario_id, rol_id) SELECT ?, id FROM roles WHERE codigo = ?', [userId, 'administrador_sistema']);
+    await db.execute('INSERT INTO usuario_seguridad (usuario_id) VALUES (?)', [userId]);
     app = await NestFactory.create(AppModule, { logger: false });
     app.setGlobalPrefix('api');
     setupSwagger(app);
@@ -85,7 +90,7 @@ test('login, cookie, CSRF, actividad, expiración, revocación y límite de inte
     assert.equal((await login()).status, 429);
     const revokedToken = randomBytes(32).toString('hex');
     await db.execute('INSERT INTO sesiones (token_hash, usuario_id, csrf_token, creada_en_ms, actividad_en_ms) VALUES (?, ?, ?, ?, ?)', [createHash('sha256').update(revokedToken).digest('hex'), userId, randomBytes(32).toString('hex'), Date.now(), Date.now()]);
-    await db.execute('UPDATE usuarios SET activo = 0 WHERE id = ?', [userId]);
+    await db.execute('UPDATE usuario_seguridad SET activo = 0 WHERE usuario_id = ?', [userId]);
     assert.equal((await call('/auth/me', { headers: { Cookie: `del_sol_session=${revokedToken}` } })).status, 401);
     await assert.rejects(app.get(AuthService).login(username, password), error => error.getStatus?.() === 401);
     const spec = await (await fetch(`${url}/api/docs-json`)).json();
@@ -94,9 +99,10 @@ test('login, cookie, CSRF, actividad, expiración, revocación y límite de inte
     await app?.close();
     if (userId) {
       await db.execute('DELETE FROM sesiones WHERE usuario_id = ?', [userId]);
-      await db.execute('DELETE FROM usuario_roles WHERE usuario_id = ?', [userId]);
-      await db.execute('DELETE FROM usuarios WHERE id = ?', [userId]);
+      await db.execute('DELETE FROM usuario_seguridad WHERE usuario_id = ?', [userId]);
+      await db.execute('DELETE FROM Usuario WHERE Id = ?', [userId]);
     }
+    if (employeeId) await db.execute('DELETE FROM Empleado WHERE Id = ?', [employeeId]);
     await db.end();
   }
 });

@@ -48,6 +48,7 @@ Copiar `apps/backend/.env.example` a `apps/backend/.env` y completar las credenc
 - [Estado y próximos pasos](docs/ESTADO.md)
 - [Login y alta del primer administrador](docs/LOGIN.md)
 - [Política de sesiones](docs/SEGURIDAD.md)
+- [Correspondencia con el modelo original de 2026](docs/MODELO-ORIGINAL.md)
 
 ## Trabajo con Git
 

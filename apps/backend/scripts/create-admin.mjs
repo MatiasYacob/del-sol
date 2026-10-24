@@ -15,7 +15,8 @@ const input = createInterface({ input: process.stdin, output, terminal: true });
 let connection;
 let validationMessage;
 try {
-  const name = (await input.question('Nombre completo: ')).trim();
+  const name = (await input.question('Nombre(s) del empleado: ')).trim();
+  const surname = (await input.question('Apellido del empleado: ')).trim();
   const username = (await input.question('Usuario: ')).trim();
   process.stdout.write('Contraseña (mínimo 12 caracteres, no se muestra): ');
   muted = true;
@@ -27,14 +28,16 @@ try {
   muted = false;
   process.stdout.write('\n');
   validationMessage = validateAdminInput(name, username, password, confirmation);
+  if (!surname || surname.length > 50) validationMessage = 'Ingresá un apellido de entre 1 y 50 caracteres.';
   if (validationMessage) throw new Error('INVALID_INPUT');
   connection = await mysql.createConnection({ host: process.env.DB_HOST, port: Number(process.env.DB_PORT || 3306), user: process.env.DB_USER, password: process.env.DB_PASSWORD, database: process.env.DB_NAME });
   await connection.beginTransaction();
-  const [roles] = await connection.execute('SELECT id FROM roles WHERE codigo = ?', ['administrador_sistema']);
+  const [roles] = await connection.execute('SELECT Id FROM Rol WHERE `Descripción` = ?', ['Administrador del sistema']);
   if (!roles.length) throw Object.assign(new Error('MISSING_ROLE'), { code: 'MISSING_ROLE' });
   const hash = await argon2.hash(password, { type: argon2.argon2id });
-  const [result] = await connection.execute('INSERT INTO usuarios (nombre, nombre_usuario, password_hash) VALUES (?, ?, ?)', [name, username, hash]);
-  await connection.execute('INSERT INTO usuario_roles (usuario_id, rol_id) VALUES (?, ?)', [result.insertId, roles[0].id]);
+  const [employee] = await connection.execute('INSERT INTO Empleado (Nombre, Apellido) VALUES (?, ?)', [name, surname]);
+  const [result] = await connection.execute('INSERT INTO Usuario (Nombre, `Contraseña`, Id_empleado, Id_Rol) VALUES (?, ?, ?, ?)', [username, hash, employee.insertId, roles[0].Id]);
+  await connection.execute('INSERT INTO usuario_seguridad (usuario_id) VALUES (?)', [result.insertId]);
   await connection.commit();
   console.log('Administrador creado. No se asignaron locales automáticamente.');
 } catch (error) {
@@ -43,7 +46,7 @@ try {
     ER_DUP_ENTRY: 'El usuario ya existe. No fue modificado.',
     ER_ACCESS_DENIED_ERROR: 'MySQL rechazó las credenciales. Revisá DB_USER y DB_PASSWORD en el .env.',
     ER_DBACCESS_DENIED_ERROR: 'El usuario de MySQL no tiene acceso a la base configurada.',
-    ER_NO_SUCH_TABLE: 'Faltan tablas. Ejecutá la migración 001 en la base configurada.',
+    ER_NO_SUCH_TABLE: 'Faltan tablas del modelo original. Ejecutá las migraciones hasta la 003 en orden.',
     ER_BAD_DB_ERROR: 'La base configurada no existe. Revisá DB_NAME en el .env.',
     ECONNREFUSED: 'No se pudo conectar a MySQL. Revisá el servicio, host y puerto.',
     ETIMEDOUT: 'MySQL no respondió a tiempo. Revisá el servicio, host y puerto.',

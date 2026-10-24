@@ -31,7 +31,7 @@ export class AuthService implements OnModuleInit {
 
   async login(username: string, password: string) {
     const [users] = await this.db.pool.execute<RowDataPacket[]>(
-      'SELECT CAST(id AS CHAR) AS id, password_hash, activo FROM usuarios WHERE nombre_usuario = ? LIMIT 1', [username],
+      'SELECT CAST(u.Id AS CHAR) AS id, u.Contraseña AS password_hash, s.activo FROM Usuario u JOIN usuario_seguridad s ON s.usuario_id=u.Id WHERE u.Nombre = ? LIMIT 1', [username],
     );
     const user = users[0];
     const valid = await argon2.verify(user?.password_hash ?? this.dummyHash, password).catch(() => false);
@@ -52,8 +52,12 @@ export class AuthService implements OnModuleInit {
     if (!token || !/^[a-f0-9]{64}$/.test(token)) return null;
     const tokenHash = this.digest(token);
     const [rows] = await this.db.pool.execute<RowDataPacket[]>(
-      `SELECT s.*, CAST(u.id AS CHAR) AS user_id, u.nombre, u.nombre_usuario, u.activo
-       FROM sesiones s JOIN usuarios u ON u.id = s.usuario_id WHERE s.token_hash = ?`, [tokenHash],
+      `SELECT s.*, CAST(u.Id AS CHAR) AS user_id, COALESCE(e.Nombre, u.Nombre) AS nombre, u.Nombre AS nombre_usuario, seg.activo,
+              r.\`Descripción\` AS rol_descripcion
+       FROM sesiones s JOIN Usuario u ON u.Id=s.usuario_id
+       JOIN usuario_seguridad seg ON seg.usuario_id=u.Id
+       LEFT JOIN Empleado e ON e.Id=u.Id_empleado
+       LEFT JOIN Rol r ON r.Id=u.Id_Rol WHERE s.token_hash = ?`, [tokenHash],
     );
     const row = rows[0];
     if (!row) return null;
@@ -61,15 +65,16 @@ export class AuthService implements OnModuleInit {
       await this.removeSession(tokenHash);
       return null;
     }
-    const [roles] = await this.db.pool.execute<RowDataPacket[]>(
-      'SELECT r.codigo FROM roles r JOIN usuario_roles ur ON ur.rol_id = r.id WHERE ur.usuario_id = ?', [row.user_id],
-    );
-    const [locales] = await this.db.pool.execute<RowDataPacket[]>(
-      'SELECT CAST(l.id AS CHAR) AS id, l.nombre FROM locales l JOIN usuario_locales ul ON ul.local_id = l.id WHERE ul.usuario_id = ? AND l.activo = 1', [row.user_id],
-    );
+    // El modelo original asigna un único rol por usuario.
+    const roleCodes: Record<string, string> = {
+      'Administrador del sistema': 'administrador_sistema',
+      'Administrativo general': 'administrativo_general',
+      'Administrativo de ventas': 'administrativo_ventas',
+    };
+    const code = roleCodes[row.rol_descripcion];
     return {
       tokenHash, csrfToken: row.csrf_token, created: Number(row.creada_en_ms), activity: Number(row.actividad_en_ms),
-      user: { id: row.user_id, name: row.nombre, username: row.nombre_usuario, roles: roles.map(r => r.codigo), locales: locales.map(l => ({ id: l.id, nombre: l.nombre })) },
+      user: { id: row.user_id, name: row.nombre, username: row.nombre_usuario, roles: code ? [code] : [], locales: [] },
     };
   }
 

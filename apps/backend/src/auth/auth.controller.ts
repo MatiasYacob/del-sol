@@ -22,7 +22,7 @@ export class AuthController {
   async login(@Body() body: unknown, @Headers('origin') origin: string | undefined, @Res({ passthrough: true }) response: Response) {
     if (origin !== this.config.get('FRONTEND_ORIGIN', 'http://localhost:5173')) throw new ForbiddenException('Origen no autorizado.');
     const value = body as Record<string, unknown> | null;
-    if (!value || typeof value.username !== 'string' || typeof value.password !== 'string' || !value.username.trim() || value.username.length > 100 || !value.password || value.password.length > 256) {
+    if (!value || typeof value.username !== 'string' || typeof value.password !== 'string' || !value.username.trim() || value.username.length > 50 || !value.password || value.password.length > 256) {
       throw new BadRequestException('Ingresá un usuario y una contraseña válidos.');
     }
     const token = await this.auth.login(value.username.trim(), value.password);
